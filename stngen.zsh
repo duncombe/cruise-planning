@@ -3,6 +3,7 @@
 # 17.8583	-32.8267	10 0 0 TL	C. Columbine
 #
 # generate station lines from Columbine to Walvis Bay @ 30 mile intervals
+# at an angle 
 #
 # echo $TOPO
 TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
@@ -10,6 +11,7 @@ TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
 NMILE=1.85325
 LSPACE=$((30.0*$NMILE))
 SSPACE=$((10.0*$NMILE))
+ANGLE=254
 
 #
 #
@@ -64,11 +66,11 @@ do
 	(( COUNT++ ))
 	####echo "# Line $LABEL \t$CENTRE"
 	# echo $CENTRE|sed "s-/- -" 
-	# project -C$CENTRE -A254 -L-70/500 -G$((10*$NMILE)) -Q
+	# project -C$CENTRE -A$ANGLE -L-70/500 -G$((10*$NMILE)) -Q
 #
 # for each point (-C) find the closest coastal point along a line
 # perpendicular to topography (-A)
-	COAST=`project stngen.coast -C$CENTRE -A254 -M |
+	COAST=`project stngen.coast -C$CENTRE -A$ANGLE -M |
 		awk '	BEGIN{min=99999}
 			{a=$4<0?-$4:$4; if (a<min){min=a; p=$5 "/" $6}}
 			END{print p}' `
@@ -76,7 +78,7 @@ do
 #
 # and generate a string of stations along the line at intervals
 # starting away from coast (-L)
-	project -C$COAST -A254		\
+	project -C$COAST -A$ANGLE		\
 		-L$SSPACE/$(($Nstn*$SSPACE))	\
 		-G$SSPACE -Q |
 		grdtrack -G$TOPO |
@@ -100,7 +102,7 @@ do
 #  16.2567 -32.0822        185.325 499     10      S10
 #  16.0666 -32.1252        203.857 869     11      S11
 
-	# project -C$COAST -A254 -L10/250 -G$((10.0*$NMILE)) -Q
+	# project -C$COAST -A$ANGLE -L10/250 -G$((10.0*$NMILE)) -Q
 	# echo $COAST|sed "s-/- -"
 done
 
