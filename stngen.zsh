@@ -1,4 +1,8 @@
 #!/bin/zsh
+#
+# Using zsh because? I think it was at the time, bash was not able to do
+# the things I required. 
+#
 # 14.5		-22.9467	10 0 0 ML	Walvis Bay
 # 17.8583	-32.8267	10 0 0 TL	C. Columbine
 #
@@ -6,6 +10,15 @@
 # at an angle 
 #
 # echo $TOPO
+
+STATIONSFILE=stngen.stns
+
+# "> filename" does not perform as expected in zsh
+rm $STATIONSFILE
+touch $STATIONSFILE
+
+echo done here
+
 TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
 
 NMILE=1.85325
@@ -95,12 +108,12 @@ do
 # starting away from coast (-L)
 	project -C$COAST -A$ANGLE		\
 		-L$SSPACE/$(($Nstn*$SSPACE))	\
-		-G$SSPACE -Q |
+		-G$SSPACE -Q | tee -a $STATIONSFILE |
 		grdtrack -G$TOPO |
 		awk -v Label=$LABEL '
 	BEGIN{	SNum=0}
 	{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
-		$1,$2,$3,$4,++SNum,Label SNum}
+		$1,$2,$3,$4,++SNum,Label SNum} 
 # {printf "%7.4f %8.4f %5.1f %5.0f %2d %-3s\n",$1,$2,$3,$4,++SNum,Label SNum}
 # {print $0 "\t" ++SNum "\t" Label SNum } '
 
@@ -122,6 +135,11 @@ do
 done
 
 #
+
+# plot stations
+
+( pscoast -R -JM -W -K 
+  psxy $STATIONSFILE -R -JM -Sp -O -B ) > stngen.ps
 
 
 #   # MARK
