@@ -9,21 +9,36 @@
 TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
 
 NMILE=1.85325
+
+# defines line spacing
 LSPACE=$((30.0*$NMILE))
+
+# defines station spacing
 SSPACE=$((10.0*$NMILE))
+
+# defines line orientation (compass direction)
 ANGLE=254
 
 #
 #
-# count for the station labels, starting at EE (AA=64 A=65)
-
+# count for the station labels, starting at EE (AA=64 A=65) 
 COUNT=58
 
 Range=-R0/20/-36/-10 
 Proj=-JM5i
+
+# defines area over which to calculate stations
 Nup=7.0
 Ndown=18.0
+
+# defines number of stations in a line
 Nstn=21.0
+
+
+# for a point near Walvis Bay
+
+ORIGIN=14.5/$((-0.25-22.9467))
+REMOTE=17.8583/-32.8267
 
 #
 # generate all points on the coast which lie in the range
@@ -40,14 +55,14 @@ echo "## Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
 ##echo "## (where stationname may be optional? where stationname is a number?)"
 
 # 
-# from a point near Walvis Bay (-C) generate points within a range (-L)
+# from a point $ORIGIN (-C) generate points within a range (-L)
 # towards another point (-E) spacing them a distance (-G) apart
 for CENTRE in `
 #
 # works best if opR8 in multiples of the line spacing UR trying to genR8
 project -Q						\
-	-C14.5/$((-0.25-22.9467))			\
-	-E17.8583/-32.8267				\
+	-C$ORIGIN					\
+	-E$REMOTE					\
 	-L$((-$LSPACE*$Nup))/$(($LSPACE*$Ndown))	\
 	-G$LSPACE					\
 	| awk '{print $1 "/" $2}' 
