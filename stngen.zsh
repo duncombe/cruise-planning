@@ -1,7 +1,7 @@
 #!/bin/zsh
 #
-# Using zsh because? I think it was at the time, bash was not able to do
-# the things I required. 
+# Using zsh because? I think it was that at the time, bash was not able to do
+# the things desired, or zsh was more advanced in certain things than bash. 
 #
 # 14.5		-22.9467	10 0 0 ML	Walvis Bay
 # 17.8583	-32.8267	10 0 0 TL	C. Columbine
@@ -14,12 +14,13 @@
 STATIONSFILE=stngen.stns
 
 # "> filename" does not perform as expected in zsh
-rm $STATIONSFILE
-touch $STATIONSFILE
+rm -f dummy $STATIONSFILE 
+touch $STATIONSFILE 
 
 echo done here
 
 TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
+[ ! -e $TOPO ] && { echo Topo file $TOPO not found ; exit 1 ; }
 
 NMILE=1.85325
 
@@ -40,18 +41,25 @@ COUNT=58
 Range=-R0/20/-36/-10 
 Proj=-JM5i
 
-# defines area over which to calculate stations
-Nup=7.0
-Ndown=18.0
+# defines area over which to calculate stations, Nup lines north of
+# origin, Ndown lines south of origin
+# Nup=7.0
+# Ndown=18.0
+Nup=-1
+Ndown=10
+
 
 # defines number of stations in a line
-Nstn=21.0
-
+Nstn=21
 
 # for a point near Walvis Bay
+# ORIGIN=14.5/$((-0.25-22.9467))
+# REMOTE=17.8583/-32.8267
 
-ORIGIN=14.5/$((-0.25-22.9467))
-REMOTE=17.8583/-32.8267
+# for a point near cape peninsula
+# -32.7442 16.4333
+ORIGIN=16.45/-28.6333333    
+REMOTE=16.433/-32.7442
 
 #
 # generate all points on the coast which lie in the range
@@ -59,13 +67,15 @@ pscoast $Range $Proj -Dh -M -W | egrep -v ">|#" > stngen.coast
 
 #
 # output a little story at the top
-echo "## Station Listing"
-echo "## Station Lines are identified by a line with "
-########echo "## \"Line\" LineName CentrePos"
-echo "## \"Line\" LineName CentrePos CoastPnt"
-echo "## Station positions are identified by a line with "
-echo "## Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
-##echo "## (where stationname may be optional? where stationname is a number?)"
+(
+  echo "## Station Listing"
+  echo "## Station Lines are identified by a line with "
+  ########echo "## \"Line\" LineName CentrePos"
+  echo "## \"Line\" LineName CentrePos CoastPnt"
+  echo "## Station positions are identified by a line with "
+  echo "## Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
+  ##echo "## (where stationname may be optional? where stationname is a number?)"
+) | tee -a $STATIONSFILE
 
 # 
 # from a point $ORIGIN (-C) generate points within a range (-L)
@@ -102,20 +112,21 @@ do
 		awk '	BEGIN{min=99999}
 			{a=$4<0?-$4:$4; if (a<min){min=a; p=$5 "/" $6}}
 			END{print p}' `
-	echo "# Line $LABEL \t$CENTRE\t$COAST"
+	echo "# Line $LABEL \t$CENTRE\t$COAST" | tee -a $STATIONSFILE
 #
 # and generate a string of stations along the line at intervals
 # starting away from coast (-L)
 	project -C$COAST -A$ANGLE		\
 		-L$SSPACE/$(($Nstn*$SSPACE))	\
-		-G$SSPACE -Q | tee -a $STATIONSFILE |
+		-G$SSPACE -Q | 
 		grdtrack -G$TOPO |
 		awk -v Label=$LABEL '
 	BEGIN{	SNum=0}
 	{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
 		$1,$2,$3,$4,++SNum,Label SNum} 
 # {printf "%7.4f %8.4f %5.1f %5.0f %2d %-3s\n",$1,$2,$3,$4,++SNum,Label SNum}
-# {print $0 "\t" ++SNum "\t" Label SNum } '
+# {print $0 "\t" ++SNum "\t" Label SNum } 
+		' | tee -a $STATIONSFILE 
 
 #  # Line S        17.4693/-31.8041        18.1476/-31.6367
 #  17.9593 -31.6825        18.5325 107     1       S1
@@ -139,7 +150,7 @@ done
 # plot stations
 
 ( pscoast -R -JM -W -K 
-  psxy $STATIONSFILE -R -JM -Sp -O -B ) > stngen.ps
+  sed -n '/^#/!p' $STATIONSFILE | psxy  -R -JM -Sp -O -B ) > stngen.ps
 
 
 #   # MARK
