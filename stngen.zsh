@@ -28,7 +28,7 @@ NMILE=1.85325
 LSPACE=$((10.0*$NMILE))
 
 # defines station spacing
-SSPACE=$((2.0*$NMILE))
+SSPACE=$((1.0*$NMILE))
 
 # defines line orientation (compass direction)
 # ANGLE=254
@@ -48,11 +48,11 @@ Proj=-JM5i
 # Nup=7.0
 # Ndown=18.0
 Nup=-1
-Ndown=36
+Ndown=38
 
 
 # defines number of stations in a line
-Nstn=101
+Nstn=201
 
 # for a point near Walvis Bay
 # ORIGIN=14.5/$((-0.25-22.9467))

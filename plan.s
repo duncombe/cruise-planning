@@ -1,3 +1,5 @@
+#! /bin/bash
+
 Range=-R8/40/-40/-10
 
 BATHYSOURCE=/usr/local/etopo5/etopo5.grd
