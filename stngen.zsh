@@ -31,14 +31,16 @@ LSPACE=$((30.0*$NMILE))
 SSPACE=$((10.0*$NMILE))
 
 # defines line orientation (compass direction)
-ANGLE=254
+# ANGLE=254
+ANGLE=245
 
 #
 #
 # count for the station labels, starting at EE (AA=64 A=65) 
 COUNT=58
 
-Range=-R0/20/-36/-10 
+# Range=-R0/20/-36/-10 
+Range=-R10/20/-36.5/-27.5 
 Proj=-JM5i
 
 # defines area over which to calculate stations, Nup lines north of
@@ -46,7 +48,7 @@ Proj=-JM5i
 # Nup=7.0
 # Ndown=18.0
 Nup=-1
-Ndown=10
+Ndown=12
 
 
 # defines number of stations in a line
@@ -150,7 +152,8 @@ done
 # plot stations
 
 ( pscoast -R -JM -W -K 
-  sed -n '/^#/!p' $STATIONSFILE | psxy  -R -JM -Sp -O -B ) > stngen.ps
+  sed -n '/^#/!p' $STATIONSFILE | 
+    psxy  -R -JM -Sc0.02i -G0 -B1 -O ) > stngen.ps
 
 
 #   # MARK
