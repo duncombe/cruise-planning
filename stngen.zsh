@@ -19,16 +19,16 @@ touch $STATIONSFILE
 
 echo done here
 
-TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
+TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
 [ ! -e $TOPO ] && { echo Topo file $TOPO not found ; exit 1 ; }
 
 NMILE=1.85325
 
 # defines line spacing
-LSPACE=$((30.0*$NMILE))
+LSPACE=$((10.0*$NMILE))
 
 # defines station spacing
-SSPACE=$((10.0*$NMILE))
+SSPACE=$((2.0*$NMILE))
 
 # defines line orientation (compass direction)
 # ANGLE=254
@@ -48,11 +48,11 @@ Proj=-JM5i
 # Nup=7.0
 # Ndown=18.0
 Nup=-1
-Ndown=12
+Ndown=36
 
 
 # defines number of stations in a line
-Nstn=21
+Nstn=101
 
 # for a point near Walvis Bay
 # ORIGIN=14.5/$((-0.25-22.9467))
@@ -122,9 +122,10 @@ do
 		-L$SSPACE/$(($Nstn*$SSPACE))	\
 		-G$SSPACE -Q | 
 		grdtrack -G$TOPO |
-		awk -v Label=$LABEL '
+		awk -v Label=$LABEL -v MaxDepth=1501 -v MinDepth=50 '
 	BEGIN{	SNum=0}
-	{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
+#             Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
+	$4>=MinDepth && $4<=MaxDepth{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
 		$1,$2,$3,$4,++SNum,Label SNum} 
 # {printf "%7.4f %8.4f %5.1f %5.0f %2d %-3s\n",$1,$2,$3,$4,++SNum,Label SNum}
 # {print $0 "\t" ++SNum "\t" Label SNum } 
@@ -151,7 +152,7 @@ done
 
 # plot stations
 
-( pscoast -R -JM -W -K 
+( pscoast -R -JM -W -Di -K 
   sed -n '/^#/!p' $STATIONSFILE | 
     psxy  -R -JM -Sc0.02i -G0 -B1 -O ) > stngen.ps
 
