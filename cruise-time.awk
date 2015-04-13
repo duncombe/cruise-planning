@@ -2,10 +2,10 @@
 
 # read list of stations from stngen.stns file calculate time to traverse
 # them allowing for a speed SPD
-# 8 knots
+# nominally 10 knots
 
 BEGIN{	if (SPD==""){SPD=10}
-	print "Using speed " SPD " knots" 
+	print "# Using speed " SPD " knots" 
 	started=0
 	TotalDist=0
 	TotalTime=0
@@ -44,7 +44,8 @@ started{
 	print $0 "\t" round(Dist*100)/100 "\t" round(TotalDist*100)/100 "\t" Time "\t" TotalTime/24
 	}
 
-END{print TotalDist}
+# don't do this
+# END{print TotalDist}
 
 
 # ## Station Listing

@@ -17,7 +17,7 @@ STATIONSFILE=stngen.stns
 rm -f dummy $STATIONSFILE 
 touch $STATIONSFILE 
 
-echo done here
+# echo done here
 
 TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
 [ ! -e $TOPO ] && { echo Topo file $TOPO not found ; exit 1 ; }
@@ -34,7 +34,11 @@ SSPACE=$((1.0*$NMILE))
 # ANGLE=254
 ANGLE=245
 
+# 
 #
+MAXD=1501
+MIND=50
+
 #
 # count for the station labels, starting at EE (AA=64 A=65) 
 COUNT=58
@@ -122,7 +126,7 @@ do
 		-L$SSPACE/$(($Nstn*$SSPACE))	\
 		-G$SSPACE -Q | 
 		grdtrack -G$TOPO |
-		awk -v Label=$LABEL -v MaxDepth=1501 -v MinDepth=50 '
+		awk -v Label=$LABEL -v MaxDepth=$MAXD -v MinDepth=$MIND '
 	BEGIN{	SNum=0}
 #             Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
 	$4>=MinDepth && $4<=MaxDepth{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
