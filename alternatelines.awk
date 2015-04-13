@@ -5,16 +5,20 @@ BEGIN{
 	N=1
 	i=1
 	}
+function PrintStationLines(){
+			#if an odd line, print it straight
+			if (N%2){ for (i=1;i<=length(STN); i++){print STN[i]}}else
+				# if an even line print it reversed
+				{ for (i=length(STN); i>0; i--){print STN[i]}}
+}
+
 /^#/{
 	# if it's the first line of a header, print the previous
 	# stationline
 	if (!head){
 		# # if it's the first header, skip the output
 		# if (N>0){
-			#if an odd line, print it straight
-			if (N%2){ for (i=1;i<=length(STN); i++){print STN[i]}}else
-				# if an even line print it reversed
-				{ for (i=length(STN); i>0; i--){print STN[i]}}
+PrintStationLines()
 		# }
 		# flag the header
 		head=1
@@ -35,10 +39,7 @@ BEGIN{
 	}
 
 END{
-			#if an odd line, print it straight
-			if (N%2){for (i=length(STN); i<=0; i--){print STN[i]}}else
-				# if an even line print it reversed
-				{for (i=1;i>length(STN); i++){print STN[i]}}
+PrintStationLines()
 	}
 
 # vim: se nowrap tw=0 :
