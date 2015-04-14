@@ -2,7 +2,13 @@
 # generate all the lines of the cruise
 
 # generate the stations
-# ./stngen.zsh 
+./stngen.zsh 
+
+# exclude stations outside the depth limits 
+TMPFILE=`mktemp`
+cat stngen.stns > $TMPFILE
+gawk -f exclude-stns.awk -v MaxDepth=1501 -v MinDepth=50 $TMPFILE > stngen.stns
+rm $TMPFILE
 
 # switch alternate lines from inshore to offshore
 gawk -f alternatelines.awk stngen.stns > stngen.snts 
@@ -33,7 +39,7 @@ makecpt -Cocean -T0/6000/500 -I > contours.cpt
 
 grdimage $TOPO -Ccontours.cpt -JM -R -K -P  > cruise-plan.ps
 
-grdcontour $TOPO -Ccontours.cnt -JM -R -B1:."IEP Tow-Yo Cruise Plan": -K -O  >> cruise-plan.ps
+grdcontour $TOPO -Ccontours.cnt -JM -R -B1:."ECMS High-Density Cruise Plan": -K -O  >> cruise-plan.ps
 
 psxy limits.snts -R -JM -W/255/0/0 -K -O >> cruise-plan.ps
 

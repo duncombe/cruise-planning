@@ -32,27 +32,28 @@ SSPACE=$((1.0*$NMILE))
 
 # defines line orientation (compass direction)
 # ANGLE=254
-ANGLE=245
+# ANGLE=245
+ANGLE=125
 
 # 
-#
-MAXD=1501
-MIND=50
+# Not appropriate to have stngen.zsh cull stations according to depth
+MAXD=91501
+MIND=-9950
 
 # count for station labels starts at A
 # COUNT=58 # EE
 COUNT=65
 
 # Range=-R0/20/-36/-10 
-Range=-R10/20/-36.5/-27.5 
+Range=-R20/35/-36.5/-20.5
 Proj=-JM5i
 
 # defines area over which to calculate stations, Nup lines north of
 # origin, Ndown lines south of origin
 # Nup=7.0
 # Ndown=18.0
-Nup=-1
-Ndown=38
+Nup=-4
+Ndown=58
 
 
 # defines number of stations in a line
@@ -64,12 +65,16 @@ Nstn=201
 
 # for a point near cape peninsula
 # -32.7442 16.4333
-ORIGIN=16.45/-28.6333333    
-REMOTE=16.433/-32.7442
+# ORIGIN=16.45/-28.6333333    
+# REMOTE=16.433/-32.7442
+# 
+# near Maputo to Port Elizabeth	
+ORIGIN=32.57703200/-25.96559000
+REMOTE=25.60000000/-33.96666667
 
 #
 # generate all points on the coast which lie in the range
-pscoast $Range $Proj -Dh -M -W | egrep -v ">|#" > stngen.coast
+pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
 
 #
 # output a little story at the top
