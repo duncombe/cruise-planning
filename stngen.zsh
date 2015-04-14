@@ -39,9 +39,9 @@ ANGLE=245
 MAXD=1501
 MIND=50
 
-#
-# count for the station labels, starting at EE (AA=64 A=65) 
-COUNT=58
+# count for station labels starts at A
+# COUNT=58 # EE
+COUNT=65
 
 # Range=-R0/20/-36/-10 
 Range=-R10/20/-36.5/-27.5 
@@ -98,6 +98,7 @@ project -Q						\
 `
 do
 #
+#
 # for each of these points (corresponding to lines) generate a line number
 	LABEL=`echo $COUNT |
 	awk ' {	a=$1;
@@ -129,7 +130,7 @@ do
 		awk -v Label=$LABEL -v MaxDepth=$MAXD -v MinDepth=$MIND '
 	BEGIN{	SNum=0}
 #             Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
-	$4>=MinDepth && $4<=MaxDepth{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
+	$4>=MinDepth && $4<=MaxDepth{printf "%8.5f\t%9.5f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
 		$1,$2,$3,$4,++SNum,Label SNum} 
 # {printf "%7.4f %8.4f %5.1f %5.0f %2d %-3s\n",$1,$2,$3,$4,++SNum,Label SNum}
 # {print $0 "\t" ++SNum "\t" Label SNum } 

@@ -15,6 +15,8 @@ BEGIN{
 	TotalTime=0
 	Dist=0
 	Time=0
+	print "## Longitude Latitude DistFromCoast Depth StationNumber StationLabel DistNM TotalDistNM TimeHR TotalTimeDAYS" 
+	
 	}
 
 !/^#/{	
