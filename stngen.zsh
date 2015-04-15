@@ -17,9 +17,9 @@ STATIONSFILE=stngen.stns
 rm -f dummy $STATIONSFILE 
 touch $STATIONSFILE 
 
-echo done here
+# echo done here
 
-TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd}
+TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
 [ ! -e $TOPO ] && { echo Topo file $TOPO not found ; exit 1 ; }
 
 NMILE=1.85325
@@ -33,18 +33,22 @@ SSPACE=$((10.0*$NMILE))
 # defines line orientation (compass direction)
 ANGLE=254
 
-#
-#
-# count for the station labels, starting at EE (AA=64 A=65) 
-COUNT=58
+# 
+# Not appropriate to have stngen.zsh cull stations according to depth
+MAXD=91501
+MIND=-9950
+
+# count for station labels starts at A
+# COUNT=58 # EE
+COUNT=65
 
 Range=-R0/20/-36/-10 
 Proj=-JM5i
 
 # defines area over which to calculate stations, Nup lines north of
 # origin, Ndown lines south of origin 
-Nup=7.0
-Ndown=18.0
+Nup=7
+Ndown=18
 
 # defines number of stations in a line
 Nstn=21
@@ -56,7 +60,7 @@ REMOTE=17.8583/-32.8267
 
 #
 # generate all points on the coast which lie in the range
-pscoast $Range $Proj -Dh -M -W | egrep -v ">|#" > stngen.coast
+pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
 
 #
 # output a little story at the top
@@ -84,6 +88,7 @@ project -Q						\
 	| awk '{print $1 "/" $2}' 
 `
 do
+#
 #
 # for each of these points (corresponding to lines) generate a line number
 	LABEL=`echo $COUNT |
@@ -113,9 +118,10 @@ do
 		-L$SSPACE/$(($Nstn*$SSPACE))	\
 		-G$SSPACE -Q | 
 		grdtrack -G$TOPO |
-		awk -v Label=$LABEL '
+		awk -v Label=$LABEL -v MaxDepth=$MAXD -v MinDepth=$MIND '
 	BEGIN{	SNum=0}
-	{printf "%7.4f\t%8.4f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
+#             Longitude Latitude DistFromCoast Depth StationNumber StationLabel"
+	$4>=MinDepth && $4<=MaxDepth{printf "%8.5f\t%9.5f\t%5.1f\t%5.0f\t%2d\t%-3s\n", \
 		$1,$2,$3,$4,++SNum,Label SNum} 
 # {printf "%7.4f %8.4f %5.1f %5.0f %2d %-3s\n",$1,$2,$3,$4,++SNum,Label SNum}
 # {print $0 "\t" ++SNum "\t" Label SNum } 
@@ -142,7 +148,7 @@ done
 
 # plot stations
 
-( pscoast -R -JM -W -K 
+( pscoast -R -JM -W -Di -K 
   sed -n '/^#/!p' $STATIONSFILE | 
     psxy  -R -JM -Sc0.02i -G0 -B1 -O ) > stngen.ps
 

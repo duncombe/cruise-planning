@@ -2,15 +2,21 @@
 
 # read list of stations from stngen.stns file calculate time to traverse
 # them allowing for a speed SPD
-# 8 knots
+# nominally 10 knots
 
-BEGIN{	if (SPD==""){SPD=10}
-	print "Using speed " SPD " knots" 
+BEGIN{	
+	# default ship speed 
+	if (SPD==""){SPD=10}
+	# default time on station
+	if (TimeOnStation==""){TimeOnStation=0}
+	print "# Using speed " SPD " knots" 
 	started=0
 	TotalDist=0
 	TotalTime=0
 	Dist=0
 	Time=0
+	print "## Longitude Latitude DistFromCoast Depth StationNumber StationLabel DistNM TotalDistNM TimeHR TotalTimeDAYS" 
+	
 	}
 
 !/^#/{	
@@ -26,7 +32,7 @@ started{
 # calculate station time
 # TimeOnStation=Bathy+Bottles+DeployRecover
 # Add in station time
-# Time+=TimeOnStation
+	 Time+=TimeOnStation
 # 
 	 TotalDist+=Dist
 	 TotalTime+=Time
@@ -41,10 +47,12 @@ started{
 	 	p1y=p0y
 		started=1
 		}
-	print $0 "\t" round(Dist*100)/100 "\t" round(TotalDist*100)/100 "\t" Time "\t" TotalTime/24
+	# print $0 "\t" round(Dist*100)/100 "\t" round(TotalDist*100)/100 "\t" Time "\t" TotalTime/24
+	printf "%s\t%.2f\t%.2f\t%.2f\t%.2f\n",$0,round(Dist*100)/100 , round(TotalDist*100)/100 , Time , TotalTime/24
 	}
 
-END{print TotalDist}
+# don't do this
+# END{print TotalDist}
 
 
 # ## Station Listing
