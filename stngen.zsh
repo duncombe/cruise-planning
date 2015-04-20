@@ -44,7 +44,8 @@ MIND=-9950
 
 # count for station labels starts at A
 # COUNT=58 # EE
-COUNT=65
+# COUNT=65
+COUNT=0
 
 # Range=-R0/20/-36/-10 
 Range=-R20/35/-36.5/-20.5
@@ -119,17 +120,8 @@ do
 #
 #
 # for each of these points (corresponding to lines) generate a line number
-	LABEL=`echo $COUNT |
-	awk '	BEGIN{A=""; B=""; C=""}
-		{a=$1}
-		a<65{a=64-(a-65); dub=1}
-                a>90{a+=6; B=65}
-		a>122{a-=26; dub=1}
-		dub==2{printf "%c%c%c\n",a,a,a }
-		dub==1{printf "%c%c\n",a,a }
-		dub==0{printf "%c\n",a}
-		'`
 	(( COUNT++ ))
+	LABEL=`echo $COUNT | gawk -f base26.awk `
 	####echo "# Line $LABEL \t$CENTRE"
 	# echo $CENTRE|sed "s-/- -" 
 	# project -C$CENTRE -A$ANGLE -L-70/500 -G$((10*$NMILE)) -Q
