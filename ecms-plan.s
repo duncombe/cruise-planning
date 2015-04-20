@@ -2,10 +2,10 @@
 # generate all the lines of the cruise
 
 # generate the stations
-./stngen.zsh 
+# ./stngen.zsh 
 
 # exclude stations outside the depth limits 
-gawk -f exclude-stns.awk -v MaxDepth=701 -v MinDepth=20 allstns.stns > stngen.stns
+gawk -f exclude-stns.awk -v MaxDepth=351 -v MinDepth=20 allstns.stns > stngen.stns
 
 # switch alternate lines from inshore to offshore
 gawk -f alternatelines.awk stngen.stns > stngen.snts 

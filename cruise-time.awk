@@ -29,7 +29,7 @@ started{
 	 # distance in nautical miles
 	 Dist=distance(p0y,p0x,p1y,p1x,"nm")
 	 # time in hours
-	 Time=Dist/SPD 
+	 Time=Dist/SPD  
 # 
 # calculate station time
 # TimeOnStation=Bathy+Bottles+DeployRecover
@@ -38,7 +38,7 @@ started{
 	 Cast=(($4<=Bathy)?$4:Bathy) * 2/60/60	# cast is at 1 m/s up and down
 	 Bottles= Samples * 90/60/60 # winch slows down, bottle soaks, bottle trips, winch starts up = about 90s per sample
 	 DeployRecover = (Bottles?1:0)*2*9/60	# vessel comes on station, carousel deployed, carousel recovered, vessel resumes course = about 18 minutes per station
-	 Time+=TimeOnStation+Bottles+Bathy+DeployRecover
+	 Time+=TimeOnStation+Bottles+Cast+DeployRecover
 # 
 	 TotalDist+=Dist
 	 TotalTime+=Time
@@ -53,7 +53,7 @@ started{
 	 	p1y=p0y
 		started=1
 		}
-	# print $0 "\t" round(Dist*100)/100 "\t" round(TotalDist*100)/100 "\t" Time "\t" TotalTime/24
+	# print $0 "\t" round(Dist*100)/100 "\t" round(TotalDist*100)/100 "\t" Time "\t" TotalTime/24 , Cast, Bottles, DeployRecover
 	printf "%s\t%.2f\t%.2f\t%.2f\t%.2f\n",$0,round(Dist*100)/100 , round(TotalDist*100)/100 , Time , TotalTime/24
 	}
 
