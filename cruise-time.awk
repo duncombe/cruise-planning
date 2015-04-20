@@ -8,7 +8,9 @@ BEGIN{
 	# default ship speed 
 	if (SPD==""){SPD=10}
 	# default time on station
-	if (TimeOnStation==""){TimeOnStation=0}
+	if (TimeOnStation==""){TimeOnStation=0}  # additional time on station
+	if (Bathy==""){Bathy=0}		# cast to max depth
+	if (Samples==""){Samples=0} 	# number of niskins on carousel
 	print "# Using speed " SPD " knots" 
 	started=0
 	TotalDist=0
@@ -32,7 +34,11 @@ started{
 # calculate station time
 # TimeOnStation=Bathy+Bottles+DeployRecover
 # Add in station time
-	 Time+=TimeOnStation
+	# TimeOnStation is a constant
+	 Cast=(($4<=Bathy)?$4:Bathy) * 2/60/60	# cast is at 1 m/s up and down
+	 Bottles= Samples * 90/60/60 # winch slows down, bottle soaks, bottle trips, winch starts up = about 90s per sample
+	 DeployRecover = (Bottles?1:0)*2*9/60	# vessel comes on station, carousel deployed, carousel recovered, vessel resumes course = about 18 minutes per station
+	 Time+=TimeOnStation+Bottles+Bathy+DeployRecover
 # 
 	 TotalDist+=Dist
 	 TotalTime+=Time

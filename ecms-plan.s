@@ -2,25 +2,29 @@
 # generate all the lines of the cruise
 
 # generate the stations
-./stngen.zsh 
+# ./stngen.zsh 
 
 # exclude stations outside the depth limits 
-TMPFILE=`mktemp`
-cat stngen.stns > $TMPFILE
-gawk -f exclude-stns.awk -v MaxDepth=1501 -v MinDepth=50 $TMPFILE > stngen.stns
-rm $TMPFILE
+gawk -f exclude-stns.awk -v MaxDepth=701 -v MinDepth=25 allstns.stns > stngen.stns
 
 # switch alternate lines from inshore to offshore
 gawk -f alternatelines.awk stngen.stns > stngen.snts 
 
-# simplify the cruise 
-gawk -f linelimits.awk stngen.snts > limits.snts
+# do not simplify the cruise 
+# gawk -f linelimits.awk stngen.snts > limits.snts
+cat stngen.snts > limits.snts
+
 
 # calculate the cruise time using the simplified cruiseplan
-{ echo 18.43666667    -33.90833333     Cape Town Docks 
+{ echo 31.00000000	-29.88333333	 Durban	
   cat limits.snts 
-  echo 18.43666667    -33.90833333     Cape Town Docks ; } | 
-	gawk -f mathlib.awk -f cruise-time.awk -v TimeOnStation=1 -v SPD=8 > limits.txt
+  echo 25.60000000	-33.96666667	 Port Elizabeth	
+} | gawk -f mathlib.awk -f cruise-time.awk	\
+	-v TimeOnStation=0	\
+	-v SPD=8 		\
+	-v Bathy=1500		\
+	-v Samples=12		\
+	> limits.txt
 
 # 
 TOPO=/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd
@@ -43,7 +47,7 @@ grdcontour $TOPO -Ccontours.cnt -JM -R -B1:."ECMS High-Density Cruise Plan": -K 
 
 psxy limits.snts -R -JM -W/255/0/0 -K -O >> cruise-plan.ps
 
-pscoast -R -JM -W  -Di -O >> cruise-plan.ps
+pscoast -R -JM -W -N1 -Di -O >> cruise-plan.ps
 
 
 
