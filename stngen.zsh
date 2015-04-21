@@ -13,7 +13,14 @@
 #
 # echo $TOPO
 
-STATIONSFILE=allstns.stns
+# check if there is information from the configuration file for all 
+STATIONSFILE=${STATIONSFILE-allstns.stns}
+
+if [ -e $STATIONSFILE ]; then
+	echo -n "$STATIONSFILE exists. Overwrite? (yN) " 
+	read ANS
+	[ "$ANS" = "y" -o "$ANS" = "Y" ] || exit 
+fi
 
 # "> filename" does not perform as expected in zsh
 rm -f dummy $STATIONSFILE 
@@ -24,13 +31,15 @@ touch $STATIONSFILE
 TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
 [ ! -e $TOPO ] && { echo Topo file $TOPO not found ; exit 1 ; }
 
-NMILE=1.85325
+NMILE=1.85325 # km
 
 # defines line spacing
-LSPACE=$((5.0*$NMILE))
+LSPACENM=${LSPACENM-5.0}
+LSPACE=$(($LSPACENM*$NMILE))
 
 # defines station spacing
-SSPACE=$((0.5*$NMILE))
+SSPACENM=${SSPACE-0.5}
+SSPACE=$(($SSPACENM*$NMILE))
 
 # defines line orientation (compass direction)
 # ANGLE=254
@@ -48,19 +57,19 @@ MIND=-9950
 COUNT=0
 
 # Range=-R0/20/-36/-10 
-Range=-R20/35/-36.5/-20.5
-Proj=-JM5i
+Range=${Range--R20/35/-36.5/-20.5}
+Proj=${Proj--JM5i}
 
-# defines area over which to calculate stations, Nup lines north of
-# origin, Ndown lines south of origin
-# Nup=7.0
-# Ndown=18.0
-Nup=-4
-Ndown=120
+# defines area over which to calculate stations, NUP lines north of
+# origin, NDOWN lines south of origin
+# NUP=7.0
+# NDOWN=18.0
+NUP=${NUP--4}
+NDOWN=${NDOWN-120}
 
 
 # defines number of stations in a line
-Nstn=411
+NSTN=${NSTN-411}
 
 # for a point near Walvis Bay
 # ORIGIN=14.5/$((-0.25-22.9467))
@@ -72,8 +81,23 @@ Nstn=411
 # REMOTE=16.433/-32.7442
 # 
 # near Maputo to Port Elizabeth	
-ORIGIN=32.57703200/-25.96559000
-REMOTE=25.60000000/-33.96666667
+ORIGIN=${ORIGIN-32.57703200/-25.96559000}
+REMOTE=${REMOTE-25.60000000/-33.96666667}
+
+# print  the configuration
+echo TOPO=$TOPO
+echo STATIONSFILE=$STATIONSFILE
+echo LSPACENM=$LSPACENM
+echo SSPACENM=$SSPACENM
+echo NUP=$NUP
+echo NDOWN=$NDOWN
+echo NSTN=$NSTN
+echo ORIGIN=$ORIGIN
+echo REMOTE=$REMOTE
+echo ANGLE=$ANGLE
+echo Range=$Range
+echo Proj=$Proj
+exit 2
 
 #
 # generate all points on the coast which lie in the range
@@ -112,7 +136,7 @@ for CENTRE in `
 project -Q						\
 	-C$ORIGIN					\
 	-E$REMOTE					\
-	-L$((-$LSPACE*$Nup))/$(($LSPACE*$Ndown))	\
+	-L$((-$LSPACE*$NUP))/$(($LSPACE*$NDOWN))	\
 	-G$LSPACE					\
 	| awk '{print $1 "/" $2}' 
 `
@@ -135,8 +159,8 @@ do
 #
 # and generate a string of stations along the line at intervals
 # starting away from coast (-L)
-# 	project -C$COAST -A$ANGLE -L0/$(($Nstn*$SSPACE)) -G$SSPACE -Q 
-	project -C$COAST -A$ANGLE -L$SSPACE/$(($Nstn*$SSPACE)) -G$SSPACE -Q | 
+# 	project -C$COAST -A$ANGLE -L0/$(($NSTN*$SSPACE)) -G$SSPACE -Q 
+	project -C$COAST -A$ANGLE -L$SSPACE/$(($NSTN*$SSPACE)) -G$SSPACE -Q | 
 		grdtrack -G$TOPO |
 		awk -v Label=$LABEL -v MaxDepth=$MAXD -v MinDepth=$MIND '
 	BEGIN{	SNum=0}
