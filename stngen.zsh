@@ -2,6 +2,8 @@
 #
 # Using zsh because? I think it was that at the time, bash was not able to do
 # the things desired, or zsh was more advanced in certain things than bash. 
+# I think it was that zsh can do real arithmmetic with $(( )) while bash
+# only does integer arithmetic.
 #
 # 14.5		-22.9467	10 0 0 ML	Walvis Bay
 # 17.8583	-32.8267	10 0 0 TL	C. Columbine
@@ -11,7 +13,7 @@
 #
 # echo $TOPO
 
-STATIONSFILE=stngen.stns
+STATIONSFILE=allstns.stns
 
 # "> filename" does not perform as expected in zsh
 rm -f dummy $STATIONSFILE 
@@ -25,13 +27,15 @@ TOPO=${TOPO-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
 NMILE=1.85325
 
 # defines line spacing
-LSPACE=$((30.0*$NMILE))
+LSPACE=$((5.0*$NMILE))
 
 # defines station spacing
-SSPACE=$((10.0*$NMILE))
+SSPACE=$((0.5*$NMILE))
 
 # defines line orientation (compass direction)
-ANGLE=254
+# ANGLE=254
+# ANGLE=245
+ANGLE=125
 
 # 
 # Not appropriate to have stngen.zsh cull stations according to depth
@@ -40,32 +44,57 @@ MIND=-9950
 
 # count for station labels starts at A
 # COUNT=58 # EE
-COUNT=65
+# COUNT=65
+COUNT=0
 
-Range=-R0/20/-36/-10 
+# Range=-R0/20/-36/-10 
+Range=-R20/35/-36.5/-20.5
 Proj=-JM5i
 
 # defines area over which to calculate stations, Nup lines north of
-# origin, Ndown lines south of origin 
-Nup=7
-Ndown=18
+# origin, Ndown lines south of origin
+# Nup=7.0
+# Ndown=18.0
+Nup=-4
+Ndown=120
+
 
 # defines number of stations in a line
-Nstn=21
+Nstn=411
 
 # for a point near Walvis Bay
+# ORIGIN=14.5/$((-0.25-22.9467))
+# REMOTE=17.8583/-32.8267
 
-ORIGIN=14.5/$((-0.25-22.9467))
-REMOTE=17.8583/-32.8267
+# for a point near cape peninsula
+# -32.7442 16.4333
+# ORIGIN=16.45/-28.6333333    
+# REMOTE=16.433/-32.7442
+# 
+# near Maputo to Port Elizabeth	
+ORIGIN=32.57703200/-25.96559000
+REMOTE=25.60000000/-33.96666667
 
 #
 # generate all points on the coast which lie in the range
+# using pscoast
 pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
+#
+# Using grdcontour is not working
+# generate a contour to use if we want to start at a particular depth
+# cat << ENDIN > contours.cnt
+# 30	C
+# ENDIN
+# do a little dance to get rid of the postscript output, and pass the
+# contours through egrep instead of directly into stngen.coast
+# ( grdcontour $Range $Proj -fog -D/dev/stderr -m -Ccontours.cnt $TOPO > /dev/null ) 2>&1 | egrep -v ">|#" > stngen.coast
 
 #
 # output a little story at the top
 (
   echo "## Station Listing"
+  echo "## Stations are nominally "`echo $(($SSPACE/$NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
+  echo "## Lines are nominally "`echo $(($LSPACE/$NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
   echo "## Station Lines are identified by a line with "
   ########echo "## \"Line\" LineName CentrePos"
   echo "## \"Line\" LineName CentrePos CoastPnt"
@@ -89,17 +118,9 @@ project -Q						\
 `
 do
 #
-#
 # for each of these points (corresponding to lines) generate a line number
-	LABEL=`echo $COUNT |
-	awk ' {	a=$1;
-		if (a<65){
-			a=64-(a-65);
-			printf "%c%c\n",a,a
-			}
-			else { printf "%c\n",a}
-		}'`
 	(( COUNT++ ))
+	LABEL=`echo $COUNT | gawk -f base26.awk `
 	####echo "# Line $LABEL \t$CENTRE"
 	# echo $CENTRE|sed "s-/- -" 
 	# project -C$CENTRE -A$ANGLE -L-70/500 -G$((10*$NMILE)) -Q
@@ -114,9 +135,8 @@ do
 #
 # and generate a string of stations along the line at intervals
 # starting away from coast (-L)
-	project -C$COAST -A$ANGLE		\
-		-L$SSPACE/$(($Nstn*$SSPACE))	\
-		-G$SSPACE -Q | 
+# 	project -C$COAST -A$ANGLE -L0/$(($Nstn*$SSPACE)) -G$SSPACE -Q 
+	project -C$COAST -A$ANGLE -L$SSPACE/$(($Nstn*$SSPACE)) -G$SSPACE -Q | 
 		grdtrack -G$TOPO |
 		awk -v Label=$LABEL -v MaxDepth=$MAXD -v MinDepth=$MIND '
 	BEGIN{	SNum=0}
