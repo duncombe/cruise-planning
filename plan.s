@@ -12,6 +12,7 @@ ARRIVE=${ARRIVE:-$DEPART}
 MAXDEPTH=${MAXDEPTH:-9999}
 MINDEPTH=${MINDEPTH:--9999}
 SKIPNM=${SKIPNM:-0}
+LINENM=${LINENM:-0}
 TIMEONSTATION=${TIMEONSTATION:-0}
 SPEED=${SPEED:-10}
 MAXCAST=${MAXCAST:-9000}
@@ -22,6 +23,10 @@ Range=${Range:--R20/35/-36.5/-20.5}
 
 NMILE=1.85325 # km
 SKIP=`echo "$SKIPNM * $NMILE" | bc`
+LINE=`echo "$LINENM * $NMILE" | bc`
+
+echo $LINE
+
 # generate all the lines of the cruise
 
 # generate the stations
@@ -30,7 +35,7 @@ ANS="Y"
 [ "$ANS" = "y" -o "$ANS" = "Y" ] && ./stngen.zsh 
 
 # exclude stations outside the depth limits 
-gawk -f exclude-stns.awk -v SKIP=$SKIP -v MAXDEPTH=$MAXDEPTH -v MINDEPTH=$MINDEPTH allstns.stns > stngen.stns
+gawk -f exclude-stns.awk -v LINE=$LINE -v SKIP=$SKIP -v MAXDEPTH=$MAXDEPTH -v MINDEPTH=$MINDEPTH allstns.stns > stngen.stns
 
 # switch alternate lines from inshore to offshore
 gawk -f alternatelines.awk stngen.stns > stngen.snts 

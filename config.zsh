@@ -1,6 +1,6 @@
 #! /bin/zsh
 
-export TITLE="ECMS High-Density Cruise Plan"
+export TITLE="ECMS SA Agulhas Cruise Plan"
 
 export STATIONSFILE=allstns.stns
 
@@ -32,11 +32,12 @@ export REMOTE=25.60000000/-33.96666667
 export LINELIMITS=false
 
 # only do stations over ground that is between MAXDEPTH And MINDEPTH
-export MAXDEPTH=351
-export MINDEPTH=20
+export MAXDEPTH=5000
+export MINDEPTH=300
 
-# ensure stations are more than SKIPNM nautical mile apart
-export SKIPNM=2
+# ensure stations are more than SKIPNM and LINENM nautical mile apart
+export SKIPNM=10
+export LINENM=30
 
 # Departure and arrival ports
 export DEPART="31.00000000	-29.88333333	 Durban"
@@ -44,7 +45,7 @@ export ARRIVE="25.60000000	-33.96666667	 Port Elizabeth"
 
 export TIMEONSTATION=0
 export SPEED=10
-export MAXCAST=1500
+export MAXCAST=2500
 export SAMPLES=12
 # For GENERIC MAPPING TOOLS figures
 # Range also partly defines area over which to read coastline 
