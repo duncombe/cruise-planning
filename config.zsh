@@ -29,14 +29,14 @@ export ORIGIN=32.57703200/-25.96559000
 export REMOTE=25.60000000/-33.96666667
 
 # only print stations at the end of lines
-export LINELIMITS=true
+export LINELIMITS=false
 
 # only do stations over ground that is between MAXDEPTH And MINDEPTH
 export MAXDEPTH=351
 export MINDEPTH=20
 
 # ensure stations are more than SKIPNM nautical mile apart
-export SKIPNM=5
+export SKIPNM=2
 
 # Departure and arrival ports
 export DEPART="31.00000000	-29.88333333	 Durban"
