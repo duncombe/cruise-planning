@@ -16,7 +16,7 @@
 # check if there is information from the configuration file for all 
 STATIONSFILE=${STATIONSFILE-allstns.stns}
 
-if [ -e $STATIONSFILE ]; then
+if [ -s $STATIONSFILE ]; then
 	echo -n "$STATIONSFILE exists. Overwrite? (yN) " 
 	read ANS
 	[ "$ANS" = "y" -o "$ANS" = "Y" ] || exit 
@@ -85,6 +85,7 @@ ORIGIN=${ORIGIN-32.57703200/-25.96559000}
 REMOTE=${REMOTE-25.60000000/-33.96666667}
 
 # print  the configuration
+echo Using these values: 
 echo TOPO=$TOPO
 echo STATIONSFILE=$STATIONSFILE
 echo LSPACENM=$LSPACENM
@@ -97,7 +98,6 @@ echo REMOTE=$REMOTE
 echo ANGLE=$ANGLE
 echo Range=$Range
 echo Proj=$Proj
-exit 2
 
 #
 # generate all points on the coast which lie in the range

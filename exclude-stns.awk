@@ -1,8 +1,10 @@
-BEGIN{ 	if (MaxDepth==""){MaxDepth=9999} 
-	if (MinDepth==""){MinDepth=-9999}
-	if (Skip==""){Skip=0}
+# exclude stations not between MAXDEPTH and MINDEPTH
+# skip stations closer together than SKIP km 
+BEGIN{ 	if (MAXDEPTH==""){MAXDEPTH=99999} 
+	if (MINDEPTH==""){MINDEPTH=-99999}
+	if (SKIP==""){SKIP=0}
 	}
-/^#/{print; place=-Skip}
-!/^#/ && $4>=MinDepth && $4<=MaxDepth && $3>(place+Skip){print; place=$3} 
+/^#/{print; place=-SKIP}
+!/^#/ && $4>=MINDEPTH && $4<=MAXDEPTH && $3>(place+SKIP){print; place=$3} 
 
 

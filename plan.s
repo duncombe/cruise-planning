@@ -1,42 +1,71 @@
 #! /bin/bash
 
-Range=-R8/40/-40/-10
+# use a configuration file
+source config.zsh
 
-BATHYSOURCE=/usr/local/etopo5/etopo5.grd
-BATHYSOURCE=/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4.grd 
+# Test all required are provided or assign a default 
+# leave and return to cape town, allow no additional time on station, vessel speed is 10 knots, cast
+# always to the bottom, using a 12 bottle carousel
+STATIONSFILE=${STATIONSFILE:-allstns.stns}
+DEPART=${DEPART:-"18.43666667    -33.90833333     Cape Town Docks"}
+ARRIVE=${ARRIVE:-$DEPART}
+TIMEONSTATION=${TIMEONSTATION:-0}
+SPEED=${SPEED:-10}
+MAXCAST=${MAXCAST:-9000}
+SAMPLES=${SAMPLES:-12}
+TOPO=${TOPO:-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
+Range=${Range:--R20/35/-36.5/-20.5}
 
-if [ ! -e topo.grd ]; then 
-	grdcut $BATHYSOURCE $Range -Gtopo.grd
+# generate all the lines of the cruise
+
+# generate the stations
+ANS="Y" 
+[ -s $STATIONSFILE ] && { read -p "$STATIONSFILE exists. Recalculate? (y/N) " ANS ;} 
+[ "$ANS" = "y" -o "$ANS" = "Y" ] && ./stngen.zsh 
+
+# exclude stations outside the depth limits 
+gawk -f exclude-stns.awk -v MAXDEPTH=$MAXDEPTH -v MINDEPTH=$MINDEPTH allstns.stns > stngen.stns
+
+# switch alternate lines from inshore to offshore
+gawk -f alternatelines.awk stngen.stns > stngen.snts 
+
+# do not simplify the cruise 
+if [ $LINELIMITS  ] ; then 
+	gawk -f linelimits.awk stngen.snts > limits.snts
 fi
-
-psbasemap $Range -JM6i -B5:."Station Time for CTD and Bongo": -P -K 
-
-# bathymetry is topography over the sea, zero over the land
-if [ ! -e bathy.grd ]; then 
-	grdmath topo.grd 0 LE topo.grd MUL -1 MUL = bathy.grd
-else
-	echo No need to calculate bathy.grd, file exists 1>&2
-fi
-# deploy and recover 5 min, cast at 1 m/s, 10 min close bottles
-if [ ! -e ctd.grd ]; then 
-	grdmath bathy.grd 1100 MIN 2 MUL 60 DIV 10 ADD 5 ADD = ctd.grd
-else
-	echo No need to calculate ctd.grd, file exists 1>&2
-fi
-# deploy and recover 3 min, cast at 1 m/s
-if [ ! -e bongo.grd ]; then 
-	grdmath bathy.grd 200 MIN 2 MUL 60 DIV 3 ADD = bongo.grd
-else
-	echo No need to calculate bongo.grd, file exists 1>&2
-fi
+cat stngen.snts > limits.snts
 
 
-# sum grids
-grdmath bongo.grd ctd.grd ADD = station.grd
-# plot the station time
+# calculate the cruise time using the simplified cruiseplan including
+# from and to ports
 
-grdcontour station.grd -R -JM6i -C15 -A60 -O -K
-pscoast -R -JM -Di -W -A0/0/1 -O
+{ echo $DEPART
+  cat limits.snts 
+  echo $ARRIVE
+} | gawk -f mathlib.awk -f cruise-time.awk	\
+	-v TimeOnStation=$TIMEONSTATION	\
+	-v SPD=$SPEED 		\
+	-v Maxcast=$MAXCAST		\
+	-v Samples=$SAMPLES		\
+	> limits.txt
 
+# 
 
+cat << ENDIN > contours.cnt
+200	C
+500	C
+1000	C
+2000	C
+3000	C
+4000	C
+5000	C
+ENDIN
 
+makecpt -Cocean -T0/6000/500 -I > contours.cpt
+
+{
+  grdimage $TOPO -Ccontours.cpt -JM5i $Range -K -P  
+  grdcontour $TOPO -Ccontours.cnt -JM $Range -B1:."ECMS High-Density Cruise Plan": -K -O 
+  psxy limits.snts $Range -JM -W/255/0/0 -K -O 
+  pscoast $Range -JM -W -N1 -Di -O 
+} > cruise-plan.ps
