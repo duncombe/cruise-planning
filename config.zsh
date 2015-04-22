@@ -35,6 +35,10 @@ export LINELIMITS=true
 # only do stations over ground that is between MAXDEPTH And MINDEPTH
 export MAXDEPTH=9999
 export MINDEPTH=-9999
+
+# ensure stations are more than SKIPNM nautical mile apart
+export SKIPNM=0
+
 # Departure and arrival ports
 export DEPART="27.91666670	-33.03333330	 East London"
 export ARRIVE="25.60000000	-33.96666667	 Port Elizabeth"

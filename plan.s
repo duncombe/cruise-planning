@@ -9,6 +9,9 @@ source config.zsh
 STATIONSFILE=${STATIONSFILE:-allstns.stns}
 DEPART=${DEPART:-"18.43666667    -33.90833333     Cape Town Docks"}
 ARRIVE=${ARRIVE:-$DEPART}
+MAXDEPTH=${MAXDEPTH:-9999}
+MINDEPTH=${MINDEPTH:--9999}
+SKIPNM=${SKIPNM:-0}
 TIMEONSTATION=${TIMEONSTATION:-0}
 SPEED=${SPEED:-10}
 MAXCAST=${MAXCAST:-9000}
@@ -16,6 +19,9 @@ SAMPLES=${SAMPLES:-12}
 TOPO=${TOPO:-/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd}
 Range=${Range:--R20/35/-36.5/-20.5}
 
+
+NMILE=1.85325 # km
+SKIP=`echo "$SKIPNM * $NMILE" | bc`
 # generate all the lines of the cruise
 
 # generate the stations
@@ -24,7 +30,7 @@ ANS="Y"
 [ "$ANS" = "y" -o "$ANS" = "Y" ] && ./stngen.zsh 
 
 # exclude stations outside the depth limits 
-gawk -f exclude-stns.awk -v MAXDEPTH=$MAXDEPTH -v MINDEPTH=$MINDEPTH allstns.stns > stngen.stns
+gawk -f exclude-stns.awk -v SKIP=$SKIP -v MAXDEPTH=$MAXDEPTH -v MINDEPTH=$MINDEPTH allstns.stns > stngen.stns
 
 # switch alternate lines from inshore to offshore
 gawk -f alternatelines.awk stngen.stns > stngen.snts 
