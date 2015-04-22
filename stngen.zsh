@@ -14,13 +14,15 @@
 # echo $TOPO
 
 # check if there is information from the configuration file for all 
+
+TITLE=${TITLE-"Campaign Name Survey Grid"}
 STATIONSFILE=${STATIONSFILE-allstns.stns}
 
-if [ -s $STATIONSFILE ]; then
-	echo -n "$STATIONSFILE exists. Overwrite? (yN) " 
-	read ANS
-	[ "$ANS" = "y" -o "$ANS" = "Y" ] || exit 
-fi
+# if [ -s $STATIONSFILE ]; then
+# 	echo -n "$STATIONSFILE exists. Overwrite? (yN) " 
+# 	read ANS
+# 	[ "$ANS" = "y" -o "$ANS" = "Y" ] || exit 
+# fi
 
 # "> filename" does not perform as expected in zsh
 rm -f dummy $STATIONSFILE 
@@ -38,7 +40,7 @@ LSPACENM=${LSPACENM-5.0}
 LSPACE=$(($LSPACENM*$NMILE))
 
 # defines station spacing
-SSPACENM=${SSPACE-0.5}
+SSPACENM=${SSPACENM-0.5}
 SSPACE=$(($SSPACENM*$NMILE))
 
 # defines line orientation (compass direction)
@@ -85,19 +87,30 @@ ORIGIN=${ORIGIN-32.57703200/-25.96559000}
 REMOTE=${REMOTE-25.60000000/-33.96666667}
 
 # print  the configuration
-echo Using these values: 
-echo TOPO=$TOPO
-echo STATIONSFILE=$STATIONSFILE
-echo LSPACENM=$LSPACENM
-echo SSPACENM=$SSPACENM
-echo NUP=$NUP
-echo NDOWN=$NDOWN
-echo NSTN=$NSTN
-echo ORIGIN=$ORIGIN
-echo REMOTE=$REMOTE
-echo ANGLE=$ANGLE
-echo Range=$Range
-echo Proj=$Proj
+if false; then 
+	echo Using these values: 
+	echo TITLE=$TITLE
+	echo TOPO=$TOPO
+	echo STATIONSFILE=$STATIONSFILE
+	echo LSPACENM=$LSPACENM
+	echo SSPACENM=$SSPACENM
+	echo NUP=$NUP
+	echo NDOWN=$NDOWN
+	echo NSTN=$NSTN
+	echo ORIGIN=$ORIGIN
+	echo REMOTE=$REMOTE
+	echo ANGLE=$ANGLE
+	echo MAXDEPTH=$MAXDEPTH
+	echo MINDEPTH=$MINDEPTH
+	echo DEPART=$DEPART
+	echo ARRIVE=$ARRIVE
+	echo TIMEONSTATION=$TIMEONSTATION
+	echo SPEED=$SPEED
+	echo MAXCAST=$MAXCAST
+	echo SAMPLES=$SAMPLES
+	echo Range=$Range
+	echo Proj=$Proj
+fi
 
 #
 # generate all points on the coast which lie in the range
@@ -116,6 +129,7 @@ pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
 #
 # output a little story at the top
 (
+  echo "## $TITLE"
   echo "## Station Listing"
   echo "## Stations are nominally "`echo $(($SSPACE/$NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
   echo "## Lines are nominally "`echo $(($LSPACE/$NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
@@ -194,7 +208,7 @@ done
 
 ( pscoast -R -JM -W -Di -K 
   sed -n '/^#/!p' $STATIONSFILE | 
-    psxy  -R -JM -Sc0.02i -G0 -B1 -O ) > stngen.ps
+    psxy  -R -JM -Sc0.02i -G0 -B1:."$TITLE": -O ) > stngen.ps
 
 
 #   # MARK

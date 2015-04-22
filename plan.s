@@ -65,7 +65,7 @@ makecpt -Cocean -T0/6000/500 -I > contours.cpt
 
 {
   grdimage $TOPO -Ccontours.cpt -JM5i $Range -K -P  
-  grdcontour $TOPO -Ccontours.cnt -JM $Range -B1:."ECMS High-Density Cruise Plan": -K -O 
+  grdcontour $TOPO -Ccontours.cnt -JM $Range -B1:."$TITLE": -K -O 
   psxy limits.snts $Range -JM -W/255/0/0 -K -O 
   pscoast $Range -JM -W -N1 -Di -O 
 } > cruise-plan.ps

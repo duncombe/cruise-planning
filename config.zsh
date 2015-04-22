@@ -1,5 +1,8 @@
 #! /bin/zsh
 
+
+export TITLE="Campaign Name Survey Grid"
+
 export STATIONSFILE=allstns.stns
 
 export TOPO=/usr/local/bathy/etopo1/ETOPO1_Ice_g_gmt4-.grd
@@ -16,7 +19,7 @@ export ANGLE=125
 # defines area over which to calculate stations.
 # Counts NUP lines north of origin
 # Counts NDOWN lines south of origin
-export NUP=-4
+export NUP=0
 export NDOWN=6
 
 # defines number of stations in a line
@@ -43,6 +46,6 @@ export SAMPLES=12
 # For GENERIC MAPPING TOOLS figures
 # Range also partly defines area over which to read coastline 
 # database and limits of line calculation 
-export Range=-R20/35/-36.5/-20.5
+export Range=-R24/30.5/-36.0/-32.0
 export Proj=-JM5i
 
