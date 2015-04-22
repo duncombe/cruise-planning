@@ -34,12 +34,16 @@ export LINELIMITS=true
 # only do stations over ground that is between MAXDEPTH And MINDEPTH
 export MAXDEPTH=351
 export MINDEPTH=20
+
+# ensure stations are more than SKIPNM nautical mile apart
+export SKIPNM=5
+
 # Departure and arrival ports
 export DEPART="31.00000000	-29.88333333	 Durban"
 export ARRIVE="25.60000000	-33.96666667	 Port Elizabeth"
 
 export TIMEONSTATION=0
-export SPEED=8
+export SPEED=10
 export MAXCAST=1500
 export SAMPLES=12
 # For GENERIC MAPPING TOOLS figures
