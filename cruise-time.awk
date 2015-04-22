@@ -18,9 +18,8 @@ BEGIN{
 	Dist=0
 	Time=0
 	print "## Longitude Latitude DistFromCoast Depth StationNumber StationLabel DistNM TotalDistNM TimeHR TotalTimeDAYS" 
-	
 	}
-
+/^#/{print}
 !/^#/{	
 	p0x=$1
 	p0y=$2
