@@ -36,8 +36,9 @@ export LINELIMITS=true
 export MAXDEPTH=9999
 export MINDEPTH=-9999
 
-# ensure stations are more than SKIPNM nautical mile apart
+# ensure stations are more than SKIPNM and LINENM nautical mile apart
 export SKIPNM=0
+export LINENM=0
 
 # Departure and arrival ports
 export DEPART="27.91666670	-33.03333330	 East London"

@@ -144,17 +144,18 @@ pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
 # 
 # from a point $ORIGIN (-C) generate points within a range (-L)
 # towards another point (-E) spacing them a distance (-G) apart
-for CENTRE in `
-#
-# works best if opR8 in multiples of the line spacing UR trying to genR8
 project -Q						\
 	-C$ORIGIN					\
 	-E$REMOTE					\
 	-L$((-$LSPACE*$NUP))/$(($LSPACE*$NDOWN))	\
-	-G$LSPACE					\
-	| awk '{print $1 "/" $2}' 
-`
+	-G$LSPACE > stngen.centres
+
+DIST0=`head -n1 stngen.centres | awk '{print $3}'`
+
+cat stngen.centres | while read line
 do
+	CENTRE=$(echo $line | awk '{print $1 "/" $2}')
+	DIST=$(echo $line | awk '{print $3}')
 #
 # for each of these points (corresponding to lines) generate a line number
 	(( COUNT++ ))
@@ -169,7 +170,7 @@ do
 		awk '	BEGIN{min=99999}
 			{a=$4<0?-$4:$4; if (a<min){min=a; p=$5 "/" $6}}
 			END{print p}' `
-	echo "# Line $LABEL \t$CENTRE\t$COAST" | tee -a $STATIONSFILE
+	echo "# Line $LABEL \t$CENTRE\t$COAST\t$(($DIST-$DIST0))" | tee -a $STATIONSFILE
 #
 # and generate a string of stations along the line at intervals
 # starting away from coast (-L)
