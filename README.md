@@ -27,10 +27,14 @@ to the coast.
 ##Requirements
 
 - Generic Mapping Tools
+  Tested on GMT Version 4.5.11.
 - zsh
+  Tested on Version 4.3.10.
 - bash
+  Tested on GNU bash, version 4.1.2.
 - libraries
-    - `PROGS/mathlib.awk`
+    - `[PROGS](github.com/duncombe/PROGS)/mathlib.awk` 
+    
 
 ##Installation
 
