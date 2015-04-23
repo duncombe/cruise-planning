@@ -34,7 +34,8 @@ to the coast.
   Tested on GNU bash, version 4.1.2.
 - libraries
     - `[PROGS](github.com/duncombe/PROGS)/mathlib.awk` 
-    
+    - gridded topographic data readable by GMT
+        Tested using ETOPO1. GMT reads NetCDF and other gridded format files.
 
 ##Installation
 
