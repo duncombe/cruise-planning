@@ -30,8 +30,8 @@ to the coast.
 - zsh
 - bash
 - libraries
-	- `PROGS/mathlib.awk`
-	- 
+    - `PROGS/mathlib.awk`
+
 
 
 
