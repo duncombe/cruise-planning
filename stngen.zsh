@@ -37,11 +37,11 @@ NMILE=1.85325 # km
 
 # defines line spacing
 LSPACENM=${LSPACENM-5.0}
-LSPACE=$(($LSPACENM*$NMILE))
+LSPACE=$((LSPACENM*NMILE))
 
 # defines station spacing
 SSPACENM=${SSPACENM-0.5}
-SSPACE=$(($SSPACENM*$NMILE))
+SSPACE=$((SSPACENM*NMILE))
 
 # defines line orientation (compass direction)
 # ANGLE=254
@@ -131,7 +131,7 @@ pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
 (
   echo "## $TITLE"
   echo "## Station Listing"
-  echo "## Stations are nominally "`echo $(($SSPACE/$NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
+  echo "## Stations are nominally "`echo $((SSPACE/NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
   echo "## Lines are nominally "`echo $(($LSPACE/$NMILE)) | awk '{print int($1*10 + 0.5)/10}'`" n.m. apart."
   echo "## Station Lines are identified by a line with "
   ########echo "## \"Line\" LineName CentrePos"
@@ -147,7 +147,7 @@ pscoast $Range $Proj -Dh -A0/0/1 -M -W | egrep -v ">|#" > stngen.coast
 project -Q						\
 	-C$ORIGIN					\
 	-E$REMOTE					\
-	-L$((-$LSPACE*$NUP))/$(($LSPACE*$NDOWN))	\
+	-L$((-LSPACE*NUP))/$((LSPACE*NDOWN))	\
 	-G$LSPACE > stngen.centres
 
 DIST0=`head -n1 stngen.centres | awk '{print $3}'`
@@ -170,12 +170,13 @@ do
 		awk '	BEGIN{min=99999}
 			{a=$4<0?-$4:$4; if (a<min){min=a; p=$5 "/" $6}}
 			END{print p}' `
-	echo "# Line $LABEL \t$CENTRE\t$COAST\t$(($DIST-$DIST0))" | tee -a $STATIONSFILE
+
+	echo "# Line $LABEL \t$CENTRE\t$COAST\t$((DIST-DIST0))" | tee -a $STATIONSFILE
 #
 # and generate a string of stations along the line at intervals
 # starting away from coast (-L)
 # 	project -C$COAST -A$ANGLE -L0/$(($NSTN*$SSPACE)) -G$SSPACE -Q 
-	project -C$COAST -A$ANGLE -L$SSPACE/$(($NSTN*$SSPACE)) -G$SSPACE -Q | 
+	{ project -C$COAST -A$ANGLE -L$SSPACE/$((NSTN*SSPACE)) -G$SSPACE -Q | 
 		grdtrack -G$TOPO |
 		awk -v Label=$LABEL -v MaxDepth=$MAXD -v MinDepth=$MIND '
 	BEGIN{	SNum=0}
@@ -185,6 +186,7 @@ do
 # {printf "%7.4f %8.4f %5.1f %5.0f %2d %-3s\n",$1,$2,$3,$4,++SNum,Label SNum}
 # {print $0 "\t" ++SNum "\t" Label SNum } 
 		' | tee -a $STATIONSFILE 
+	} 2> >( grep -v Inconsistent )
 
 #  # Line S        17.4693/-31.8041        18.1476/-31.6367
 #  17.9593 -31.6825        18.5325 107     1       S1
