@@ -32,6 +32,12 @@ to the coast.
 - libraries
     - `PROGS/mathlib.awk`
 
+##Installation
 
+Clone the repository. Ensure dependencies are available. Modify `config.zsh` to taste, and run `plan.s`. 
+
+##Community Collaboration
+
+Enhancements and bug fixes to the packages are encouraged. Submit pull requests for consideration.
 
 
