@@ -4,5 +4,5 @@ clean:
 	rm *.cnt *.cpt *.snts *.coast
 
 cleanall: clean
-	rm *.stns *.txt *.ps 
+	rm *.stns *.txt *.ps *.orig
 
