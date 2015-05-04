@@ -46,7 +46,7 @@ SSPACE=$((SSPACENM*NMILE))
 # defines line orientation (compass direction)
 # ANGLE=254
 # ANGLE=245
-ANGLE=125
+ANGLE=${ANGLE-125}
 
 # 
 # Not appropriate to have stngen.zsh cull stations according to depth
@@ -110,6 +110,7 @@ if false; then
 	echo SAMPLES=$SAMPLES
 	echo Range=$Range
 	echo Proj=$Proj
+	exit
 fi
 
 #
