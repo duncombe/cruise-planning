@@ -39,10 +39,11 @@ gawk -f exclude-stns.awk -v LINE=$LINE -v SKIP=$SKIP -v MAXDEPTH=$MAXDEPTH -v MI
 gawk -f alternatelines.awk stngen.stns > stngen.snts 
 
 # do not simplify the cruise 
-if [ $LINELIMITS  ] ; then 
+if ${LINELIMITS} ; then 
 	gawk -f linelimits.awk stngen.snts > limits.snts
+else
+	cat stngen.snts > limits.snts
 fi
-cat stngen.snts > limits.snts
 
 
 # calculate the cruise time using the simplified cruiseplan including
@@ -56,7 +57,7 @@ cat stngen.snts > limits.snts
 	-v SPD=$SPEED 		\
 	-v Maxcast=$MAXCAST		\
 	-v Samples=$SAMPLES		\
-	> limits.txt
+> limits.txt
 
 # 
 
