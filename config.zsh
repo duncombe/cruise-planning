@@ -44,6 +44,8 @@ export LINENM=0
 export DEPART="27.91666670	-33.03333330	 East London"
 export ARRIVE="25.60000000	-33.96666667	 Port Elizabeth"
 
+# station time calculations are done only on stations that pass through
+# maxdepth, mindepth and linelimits filters
 export TIMEONSTATION=0
 export SPEED=10
 export MAXCAST=1500
