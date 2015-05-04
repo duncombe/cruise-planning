@@ -8,8 +8,8 @@ cruise-plan.png: cruise-plan.ps
 
 
 clean:
-	rm -f dummy *.cnt *.cpt *.snts *.coast *.centres
+	@rm -f dummy *.cnt *.cpt *.snts *.coast *.centres
 
 cleanall: clean
-	rm -f dummy *.stns *.txt *.ps *.orig
+	@rm -f dummy *.stns *.txt *.ps *.orig
 
