@@ -44,8 +44,6 @@ SSPACENM=${SSPACENM-0.5}
 SSPACE=$((SSPACENM*NMILE))
 
 # defines line orientation (compass direction)
-# ANGLE=254
-# ANGLE=245
 ANGLE=${ANGLE-125}
 
 # 
